@@ -18,10 +18,6 @@ public class BooleanExpression3 {
         this.name = name != null ? name : "<name?>";
     }
 
-//    public static BooleanExpression3 bln(Function<Object, Boolean> bln) {
-//        return bln(bln, String.valueOf(bln));
-//    }
-
     public static BooleanExpression3 bln(Boolean value, String name) {
         return bln(new RawBlnValue(value), name);
     }
@@ -34,20 +30,6 @@ public class BooleanExpression3 {
         return bln(new BooleanExpressionBooleanSupplier(other), other.getName());
     }
 
-//    public static BooleanExpression3 bln(Boolean value) {
-//        return bln(value, String.valueOf(value));
-//    }
-
-
-
-//    public static BooleanExpression3 bln(BooleanExpression3 expr) {
-//        return bln(expr, expr.getName());
-//    }
-//
-//    public static BooleanExpression3 bln(BooleanExpression3 expr, String name) {
-//        return bln(new BooleanExpressionBooleanSupplier(expr), name);
-//    }
-
     public BooleanExpression3 and(Boolean value, String name) {
         return and(bln(value, name));
     }
@@ -58,6 +40,14 @@ public class BooleanExpression3 {
 
     public BooleanExpression3 and(BooleanExpression3 other) {
         return bln(new BlnAnd(this, other), BlnAnd.getName(this, other));
+    }
+
+    public BooleanExpression3 or(Boolean value, String name) {
+        return or(bln(value, name));
+    }
+
+    public <F> BooleanExpression3 or(Function<F, Boolean> function, String name) {
+        return or(bln(function, name));
     }
 
     public BooleanExpression3 or(BooleanExpression3 other) {
@@ -99,6 +89,28 @@ public class BooleanExpression3 {
         return "BooleanExpression {"
                 + name +
                 '}';
+    }
+
+    public void visit(BlnExpressionVisitor visitor) {
+        visitor.visitBooleanExpression(this);
+
+        if (supplierFunction instanceof BlnAnd) {
+            BlnAnd blnAnd = ((BlnAnd) supplierFunction);
+            visitor.visitBooleanAnd(this, blnAnd.arg1, blnAnd.arg2);
+            blnAnd.visit(visitor);
+        } else if (supplierFunction instanceof BlnOr) {
+            BlnOr blnOr = ((BlnOr) supplierFunction);
+            visitor.visitBooleanOr(this, blnOr.arg1, blnOr.arg2);
+            blnOr.visit(visitor);
+        } else if (supplierFunction instanceof BooleanExpression3) {
+            ((BooleanExpression3) supplierFunction).visit(visitor);
+        } else if (supplierFunction instanceof BooleanExpressionBooleanSupplier) {
+            // this is a boolean group
+            ((BooleanExpressionBooleanSupplier) supplierFunction).expr.visit(visitor);
+        } else {
+            // this wound up capturing a boolean group...(A AND B)
+            visitor.visitBooleanLeaf(this);
+        }
     }
 
     public String getName() {
@@ -187,6 +199,12 @@ public class BooleanExpression3 {
         public static String getName(BooleanExpression3 arg1, BooleanExpression3 arg2) {
             return "(" + arg1.getName() + " AND " + arg2.getName() + ")";
         }
+
+        public void visit(BlnExpressionVisitor visitor) {
+            visitor.visitBooleanAnd(arg1, arg2);
+            arg1.visit(visitor);
+            arg2.visit(visitor);
+        }
     }
 
     public static class BlnOr implements Function<Object, Boolean> {
@@ -212,6 +230,12 @@ public class BooleanExpression3 {
         public static String getName(BooleanExpression3 arg1, BooleanExpression3 arg2) {
             return "(" + arg1.getName() + " OR " + arg2.getName() + ")";
         }
+
+        public void visit(BlnExpressionVisitor visitor) {
+            visitor.visitBooleanOr(arg1, arg2);
+            arg1.visit(visitor);
+            arg2.visit(visitor);
+        }
     }
 
     public static class BlnNot implements Function<Object, Boolean> {
@@ -236,109 +260,23 @@ public class BooleanExpression3 {
         }
     }
 
-//    public interface BlnOperator {
-//        BlnBinaryOperator AND = new BlnAnd();
-//        BlnBinaryOperator OR = new BlnOr();
-//        BlnUnaryOperator NOT = new BlnNot();
-//    }
+    public interface BlnExpressionVisitor {
+        default void visitBooleanExpression(BooleanExpression3 expression) {
+        }
 
-//    public interface BlnUnaryOperator extends BlnOperator, UnaryOperator<BooleanExpression3> {
-//        Boolean evaluate(BooleanExpression3 arg);
-//
-//        @Override
-//        default BooleanExpression3 apply(BooleanExpression3 arg) {
-//            return new BooleanExpression3(() -> evaluate(arg), toString() + " " + arg.getName());
-//        }
-//    }
+        default void visitBooleanAnd(BooleanExpression3 arg1, BooleanExpression3 arg2) {
+        }
 
-//    public interface BlnBinaryOperator extends BlnOperator, BinaryOperator<BooleanExpression3> {
-//
-//        @Override
-//        default BooleanExpression3 apply(BooleanExpression3 arg1, BooleanExpression3 arg2) {
-//            return new BooleanExpression3(getBooleanSupplier(arg1, arg2), "(" + arg1.name + " " + toString() + " " + arg2.getName() + ")");
-//        }
-//
-//        BlnBinaryOpSupplier getBooleanSupplier(BooleanExpression3 arg1, BooleanExpression3 arg2);
-//
-//        abstract class BlnBinaryOpSupplier implements Function<Object, Boolean> {
-//
-//            protected BooleanExpression3 arg1;
-//            protected BooleanExpression3 arg2;
-//
-//            public BlnBinaryOpSupplier(BooleanExpression3 arg1, BooleanExpression3 arg2) {
-//                this.arg1 = arg1;
-//                this.arg2 = arg2;
-//            }
-//
-//            public BooleanExpression3 getArg1() {
-//                return arg1;
-//            }
-//
-//            public BooleanExpression3 getArg2() {
-//                return arg2;
-//            }
-//        }
-//    }
+        default void visitBooleanOr(BooleanExpression3 arg1, BooleanExpression3 arg2) {
+        }
 
-//    public static class BlnAnd implements BlnBinaryOperator {
-//
-//        @Override
-//        public String toString() {
-//            return "AND";
-//        }
-//
-//        @Override
-//        public BlnAndBooleanSupplier getBooleanSupplier(BooleanExpression3 arg1, BooleanExpression3 arg2) {
-//            return new BlnAndBooleanSupplier(arg1, arg2);
-//        }
-//
-//        public static class BlnAndBooleanSupplier extends BlnBinaryOpSupplier {
-//
-//            public BlnAndBooleanSupplier(BooleanExpression3 arg1, BooleanExpression3 arg2) {
-//                super(arg1, arg2);
-//            }
-//
-//            @Override
-//            public Boolean apply(Object facts) {
-//                return arg1.evaluate(facts) && arg2.evaluate(facts);
-//            }
-//
-//            @Override
-//            public String toString() {
-//                return "(" + arg1.getName() + " AND " + arg2.getName() + ")";
-//            }
-//        }
-//    }
+        default void visitBooleanAnd(BooleanExpression3 andExpression, BooleanExpression3 arg1, BooleanExpression3 arg2) {
+        }
 
+        default void visitBooleanOr(BooleanExpression3 orExpression, BooleanExpression3 arg1, BooleanExpression3 arg2) {
+        }
 
-
-//    public static class BlnOr implements BlnBinaryOperator {
-//
-//        @Override
-//        public String toString() {
-//            return "OR";
-//        }
-//
-//        @Override
-//        public BlnOrBooleanSupplier getBooleanSupplier(BooleanExpression3 arg1, BooleanExpression3 arg2) {
-//            return new BlnOrBooleanSupplier(arg1, arg2);
-//        }
-//
-//        public static class BlnOrBooleanSupplier extends BlnBinaryOpSupplier {
-//
-//            public BlnOrBooleanSupplier(BooleanExpression3 arg1, BooleanExpression3 arg2) {
-//                super(arg1, arg2);
-//            }
-//
-//            @Override
-//            public Boolean apply(Object facts) {
-//                return arg1.evaluate(facts) || arg2.evaluate(facts);
-//            }
-//
-//            @Override
-//            public String toString() {
-//                return "(" + arg1.getName() + " OR " + arg2.getName() + ")";
-//            }
-//        }
-//    }
+        default void visitBooleanLeaf(BooleanExpression3 expression) {
+        }
+    }
 }
