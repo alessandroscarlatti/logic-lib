@@ -32,19 +32,40 @@ public class BooleanExpressionVisualizer {
 //                        .or(false, "K")
 //                        .or(false, "L")
 //        );
-        BooleanExpression3 expr = bln(true, "A")
-                .and(true, "B")
-                .and(true, "C")
-                .and(false, "D")
-                .or(false, "E")
-                .or(false, "F")
-                .or(false, "G")
-                .and(false, "H")
-                .and(false, "I")
-                .or(
-                        bln(false, "J")
-                        .and(true, "K")
-                );
+
+        class Facts {
+            int a = 0;
+            int b = 1;
+            int c = 2;
+
+            public Facts(int a, int b, int c) {
+                this.a = a;
+                this.b = b;
+                this.c = c;
+            }
+        }
+
+        BooleanExpression3 expr = bln((Facts f) -> f.a == 0, "a == 0")
+                .or((Facts f) -> f.b == 1, "b == 1")
+                .or((Facts f) -> f.c == 2, "c == 2");
+
+//        BooleanExpression3 expr = bln(true, "A")
+//                .and(true, "B")
+//                .and(true, "C")
+//                .and(false, "D")
+//                .and(
+//                        bln(false, "E")
+//                                .or(false, "F")
+//                                .or(false, "G")
+//                )
+//                .and(false, "H")
+//                .and(false, "I")
+//                .or(
+//                        bln(false, "J")
+//                                .and(true, "K")
+//                );
+
+        expr.evaluate(new Facts(0, 0, 2));
 
         Network network = getNetwork(expr);
 //        Path file = Paths.get("sandbox/network.json");
@@ -59,7 +80,7 @@ public class BooleanExpressionVisualizer {
         BlnExpressionVisitor visitor = new BlnExpressionVisitor() {
 
             private boolean foundFirstBinaryOperator = false;
-//            private final Map<String, BooleanExpression3> allExpressionParents = new HashMap<>();
+            //            private final Map<String, BooleanExpression3> allExpressionParents = new HashMap<>();
             private final Map<String, BooleanExpression3> orExpressionParents = new HashMap<>();
             private final Map<String, BooleanExpression3> andExpressionParents = new HashMap<>();
 
@@ -77,6 +98,7 @@ public class BooleanExpressionVisualizer {
                     Network.Edge edge1 = new Network.Edge();
                     edge1.setFrom(andExpression.getName());
                     edge1.setTo(andExpression.getName() + "_start");
+                    edge1.setLabel(andExpression.isEvaluated() ? String.valueOf(andExpression.getValue()) : null);
                     edge1.setColor("lightgray");
 
                     network.getNodes().add(node1);
@@ -88,6 +110,9 @@ public class BooleanExpressionVisualizer {
 
 
                 if (!andExpressionParents.containsKey(andExpression.getName())) {
+                    // this is the first time we've encountered this "AND node"
+                    // it has NOT been encountered yet as the PARENT of any other node
+                    // (a AND b) AND C
                     Network.Node node1 = new Network.Node();
                     node1.setId(andExpression.getName());
                     node1.setLabel("AND");
@@ -105,11 +130,13 @@ public class BooleanExpressionVisualizer {
                 Network.Edge edge1 = new Network.Edge();
                 edge1.setFrom(arg1.getName());
                 edge1.setTo(andExpressionToUse.getName());
+                edge1.setLabel(arg1.isEvaluated() ? String.valueOf(arg1.getValue()) : null);
                 edge1.setColor("lightgray");
 
                 Network.Edge edge2 = new Network.Edge();
                 edge2.setFrom(arg2.getName());
                 edge2.setTo(andExpressionToUse.getName());
+                edge2.setLabel(arg2.isEvaluated() ? String.valueOf(arg2.getValue()) : null);
                 edge2.setColor("lightgray");
 
                 network.getEdges().add(edge1);
@@ -132,6 +159,7 @@ public class BooleanExpressionVisualizer {
                     Network.Edge edge1 = new Network.Edge();
                     edge1.setFrom(orExpression.getName());
                     edge1.setTo(orExpression.getName() + "_start");
+                    edge1.setLabel(orExpression.isEvaluated() ? String.valueOf(orExpression.getValue()) : null);
                     edge1.setColor("lightgray");
 
                     network.getNodes().add(node1);
@@ -167,11 +195,13 @@ public class BooleanExpressionVisualizer {
                 Network.Edge edge1 = new Network.Edge();
                 edge1.setFrom(arg1.getName());
                 edge1.setTo(orExpressionToUse.getName());
+                edge1.setLabel(arg1.isEvaluated() ? String.valueOf(arg1.getValue()) : null);
                 edge1.setColor("lightgray");
 
                 Network.Edge edge2 = new Network.Edge();
                 edge2.setFrom(arg2.getName());
                 edge2.setTo(orExpressionToUse.getName());
+                edge2.setLabel(arg2.isEvaluated() ? String.valueOf(arg2.getValue()) : null);
                 edge2.setColor("lightgray");
 
                 network.getEdges().add(edge1);
