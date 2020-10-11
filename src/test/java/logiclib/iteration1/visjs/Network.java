@@ -69,6 +69,7 @@ public class Network {
         private String to;
         private String color;
         private String arrows;
+        private Font font = new Font();
 
         public String getLabel() {
             return label;
@@ -108,6 +109,35 @@ public class Network {
 
         public void setArrows(String arrows) {
             this.arrows = arrows;
+        }
+
+        public Font getFont() {
+            return font;
+        }
+
+        public void setFont(Font font) {
+            this.font = font;
+        }
+
+        public static class Font {
+            private String color;
+            private String strokeColor;
+
+            public String getColor() {
+                return color;
+            }
+
+            public void setColor(String color) {
+                this.color = color;
+            }
+
+            public String getStrokeColor() {
+                return strokeColor;
+            }
+
+            public void setStrokeColor(String strokeColor) {
+                this.strokeColor = strokeColor;
+            }
         }
     }
 }

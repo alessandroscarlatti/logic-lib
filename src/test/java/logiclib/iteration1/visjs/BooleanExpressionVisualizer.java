@@ -65,7 +65,7 @@ public class BooleanExpressionVisualizer {
 //                                .and(true, "K")
 //                );
 
-        expr.evaluate(new Facts(0, 0, 2));
+        expr.evaluate(new Facts(-1234, 0, 3));
 
         Network network = getNetwork(expr);
 //        Path file = Paths.get("sandbox/network.json");
@@ -98,8 +98,14 @@ public class BooleanExpressionVisualizer {
                     Network.Edge edge1 = new Network.Edge();
                     edge1.setFrom(andExpression.getName());
                     edge1.setTo(andExpression.getName() + "_start");
-                    edge1.setLabel(andExpression.isEvaluated() ? String.valueOf(andExpression.getValue()) : null);
-                    edge1.setColor("lightgray");
+                    if (arg1.isEvaluated()) {
+                        edge1.setColor(andExpression.getValue() ? "lightgreen" : "orangered");
+                        edge1.getFont().setColor(andExpression.getValue() ? "lightgreen" : "orangered");
+                        edge1.getFont().setStrokeColor("#343434");
+                        edge1.setLabel(String.valueOf(andExpression.getValue()));
+                    } else {
+                        edge1.setColor("lightblue");
+                    }
 
                     network.getNodes().add(node1);
                     network.getEdges().add(edge1);
@@ -130,14 +136,28 @@ public class BooleanExpressionVisualizer {
                 Network.Edge edge1 = new Network.Edge();
                 edge1.setFrom(arg1.getName());
                 edge1.setTo(andExpressionToUse.getName());
-                edge1.setLabel(arg1.isEvaluated() ? String.valueOf(arg1.getValue()) : null);
-                edge1.setColor("lightgray");
+
+                if (arg1.isEvaluated()) {
+                    edge1.setColor(arg1.getValue() ? "lightgreen" : "orangered");
+                    edge1.getFont().setColor(arg1.getValue() ? "lightgreen" : "orangered");
+                    edge1.getFont().setStrokeColor("#343434");
+                    edge1.setLabel(String.valueOf(arg1.getValue()));
+                } else {
+                    edge1.setColor("lightblue");
+                }
 
                 Network.Edge edge2 = new Network.Edge();
                 edge2.setFrom(arg2.getName());
                 edge2.setTo(andExpressionToUse.getName());
-                edge2.setLabel(arg2.isEvaluated() ? String.valueOf(arg2.getValue()) : null);
-                edge2.setColor("lightgray");
+
+                if (arg2.isEvaluated()) {
+                    edge2.setColor(arg2.getValue() ? "lightgreen" : "orangered");
+                    edge2.getFont().setColor(arg2.getValue() ? "lightgreen" : "orangered");
+                    edge2.getFont().setStrokeColor("#343434");
+                    edge2.setLabel(String.valueOf(arg2.getValue()));
+                } else {
+                    edge1.setColor("lightblue");
+                }
 
                 network.getEdges().add(edge1);
                 network.getEdges().add(edge2);
@@ -159,8 +179,14 @@ public class BooleanExpressionVisualizer {
                     Network.Edge edge1 = new Network.Edge();
                     edge1.setFrom(orExpression.getName());
                     edge1.setTo(orExpression.getName() + "_start");
-                    edge1.setLabel(orExpression.isEvaluated() ? String.valueOf(orExpression.getValue()) : null);
-                    edge1.setColor("lightgray");
+                    if (arg1.isEvaluated()) {
+                        edge1.setColor(orExpression.getValue() ? "lightgreen" : "orangered");
+                        edge1.getFont().setColor(orExpression.getValue() ? "lightgreen" : "orangered");
+                        edge1.getFont().setStrokeColor("#343434");
+                        edge1.setLabel(String.valueOf(orExpression.getValue()));
+                    } else {
+                        edge1.setColor("lightblue");
+                    }
 
                     network.getNodes().add(node1);
                     network.getEdges().add(edge1);
@@ -195,14 +221,28 @@ public class BooleanExpressionVisualizer {
                 Network.Edge edge1 = new Network.Edge();
                 edge1.setFrom(arg1.getName());
                 edge1.setTo(orExpressionToUse.getName());
-                edge1.setLabel(arg1.isEvaluated() ? String.valueOf(arg1.getValue()) : null);
-                edge1.setColor("lightgray");
+
+                if (arg1.isEvaluated()) {
+                    edge1.setColor(arg1.getValue() ? "lightgreen" : "orangered");
+                    edge1.getFont().setColor(arg1.getValue() ? "lightgreen" : "orangered");
+                    edge1.getFont().setStrokeColor("#343434");
+                    edge1.setLabel(String.valueOf(arg1.getValue()));
+                } else {
+                    edge1.setColor("lightblue");
+                }
 
                 Network.Edge edge2 = new Network.Edge();
                 edge2.setFrom(arg2.getName());
                 edge2.setTo(orExpressionToUse.getName());
-                edge2.setLabel(arg2.isEvaluated() ? String.valueOf(arg2.getValue()) : null);
-                edge2.setColor("lightgray");
+
+                if (arg2.isEvaluated()) {
+                    edge2.setColor(arg2.getValue() ? "lightgreen" : "orangered");
+                    edge2.getFont().setColor(arg2.getValue() ? "lightgreen" : "orangered");
+                    edge2.getFont().setStrokeColor("#343434");
+                    edge2.setLabel(String.valueOf(arg2.getValue()));
+                } else {
+                    edge2.setColor("lightblue");
+                }
 
                 network.getEdges().add(edge1);
                 network.getEdges().add(edge2);
@@ -215,8 +255,8 @@ public class BooleanExpressionVisualizer {
                 Network.Node node1 = new Network.Node();
                 node1.setId(leaf.getName());
                 node1.setLabel(leaf.getName());
-                node1.setColor("lightblue");
                 node1.setShape("box");
+                node1.setColor("lightblue");
 
                 network.getNodes().add(node1);
             }
