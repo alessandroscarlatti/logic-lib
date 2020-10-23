@@ -43,10 +43,9 @@ public class Xml2JsonDemo1 {
         byte[] xml = Files.readAllBytes(Paths.get("C:\\Users\\tso7938\\Desktop\\10-11-2020\\olmastr4.xml"));
 
         XmlMapper xmlMapper = new XmlMapper();
-        xmlMapper.registerModule(new SimpleModule().addDeserializer(
-                JsonNode.class,
-                new DuplicateToArrayJsonNodeDeserializer()
-        ));
+        xmlMapper.registerModule(
+                new SimpleModule().addDeserializer(JsonNode.class, new DuplicateToArrayJsonNodeDeserializer()));
+
         JsonNode jsonNode = xmlMapper.readTree(xml);
 
         String json = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode);
@@ -54,6 +53,5 @@ public class Xml2JsonDemo1 {
         Files.write(Paths.get("C:\\Users\\tso7938\\Desktop\\10-11-2020\\olmastr4.json"), json.getBytes());
 
         System.out.println("done");
-
     }
 }

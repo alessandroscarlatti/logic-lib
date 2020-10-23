@@ -1,4 +1,4 @@
-package logiclib.iteration1;
+package logiclib.iteration1.expression;
 
 import org.openjdk.jmh.Main;
 import org.openjdk.jmh.annotations.*;
@@ -6,7 +6,7 @@ import org.openjdk.jmh.annotations.*;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import static logiclib.iteration1.BooleanExpression.bln;
+import static logiclib.iteration1.expression.BooleanExpression.bln;
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)

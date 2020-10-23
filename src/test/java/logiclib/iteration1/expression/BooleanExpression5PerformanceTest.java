@@ -1,4 +1,4 @@
-package logiclib.iteration1;
+package logiclib.iteration1.expression;
 
 import org.openjdk.jmh.Main;
 import org.openjdk.jmh.annotations.*;
@@ -6,24 +6,27 @@ import org.openjdk.jmh.annotations.*;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import static logiclib.iteration1.BooleanExpression3.bln;
+import static logiclib.iteration1.expression.BooleanExpression5.*;
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
-public class BooleanExpression3PerformanceTest {
+public class BooleanExpression5PerformanceTest {
 
 
-    //so far...10/10/2020
     //Benchmark                                           Mode  Cnt   Score   Error  Units
-    //BooleanExpression3PerformanceTest.performanceTest1  avgt   20  72.592 ± 0.870  ns/op
-    //BooleanExpression3PerformanceTest.performanceTest2  avgt   20  40.124 ± 0.422  ns/op
-    private static BooleanExpression3 expr = bln(
-            bln((Facts f) -> f.a, "A")
-                    .and((Facts f) -> f.b, "B")
-    ).or(
-            bln((Facts f) -> f.c, "C")
-                    .and((Facts f) -> f.d, "D")
+    //BooleanExpression5PerformanceTest.performanceTest1  avgt   20  75.601 ± 2.405  ns/op
+    //BooleanExpression5PerformanceTest.performanceTest2  avgt   20  41.733 ± 2.437  ns/op
+
+    private static BooleanExpression5 expr = or(
+            and(
+                    bln((Facts f) -> f.a, "A"),
+                    bln((Facts f) -> f.b, "B")
+            ),
+            and(
+                    bln((Facts f) -> f.c, "C"),
+                    bln((Facts f) -> f.d, "D")
+            )
     );
 
     // avg. 108-130 ns/op
@@ -54,7 +57,7 @@ public class BooleanExpression3PerformanceTest {
     }
 
     public static void main(String[] args) throws Exception {
-        Main.main(new String[]{BooleanExpression3PerformanceTest.class.getSimpleName()});
+        Main.main(new String[]{BooleanExpression5PerformanceTest.class.getSimpleName()});
     }
 
 }

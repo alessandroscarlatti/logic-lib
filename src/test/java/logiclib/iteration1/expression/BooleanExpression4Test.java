@@ -1,13 +1,13 @@
-package logiclib.iteration1;
+package logiclib.iteration1.expression;
 
 import org.junit.Test;
 
-import static logiclib.iteration1.BooleanExpression3.bln;
-import static logiclib.iteration1.BooleanExpression3.not;
+import static logiclib.iteration1.expression.BooleanExpression4.bln;
+import static logiclib.iteration1.expression.BooleanExpression4.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class BooleanExpression3Test {
+public class BooleanExpression4Test {
 
     @Test
     public void testSyntax() {
@@ -19,12 +19,12 @@ public class BooleanExpression3Test {
 //            boolean d;
 //        }
 //
-//        BooleanExpression33 philLikesRed = bln(f -> ((Facts) f).a.equals("RED"), "Phil likes red");
-//        BooleanExpression33 annieLikesRed = bln(f -> ((Facts) f).b.equals("RED"), "Annie likes red");
-//        BooleanExpression33 charlotteLikesBlue = bln(f -> ((Facts) f).c.equals("BLUE"), "Charlotte likes blue");
-//        BooleanExpression33 teddyLikesBlue = bln(f -> ((Facts) f).d.equals("BLUE"), "Teddy likes blue");
+//        BooleanExpression43 philLikesRed = bln(f -> ((Facts) f).a.equals("RED"), "Phil likes red");
+//        BooleanExpression43 annieLikesRed = bln(f -> ((Facts) f).b.equals("RED"), "Annie likes red");
+//        BooleanExpression43 charlotteLikesBlue = bln(f -> ((Facts) f).c.equals("BLUE"), "Charlotte likes blue");
+//        BooleanExpression43 teddyLikesBlue = bln(f -> ((Facts) f).d.equals("BLUE"), "Teddy likes blue");
 //
-//        BooleanExpression33 expr = bln(
+//        BooleanExpression43 expr = bln(
 //                philLikesRed.and(annieLikesRed)
 //        ).or(
 //                charlotteLikesBlue.and(teddyLikesBlue)
@@ -41,23 +41,23 @@ public class BooleanExpression3Test {
 
     @Test
     public void testToString() {
-        BooleanExpression3 a = bln(true, "A");
+        BooleanExpression4 a = bln(true, "A");
         System.out.println("A,true: " + a);
 
-        BooleanExpression3 aAndB = bln(true, "A")
+        BooleanExpression4 aAndB = bln(true, "A")
                 .and(bln(true, "B"));
         System.out.println("A,true AND B,true: " + aAndB);
 
-        BooleanExpression3 aOrB = bln(true, "A")
+        BooleanExpression4 aOrB = bln(true, "A")
                 .or(bln(false, "B"));
         System.out.println("A,true OR B,true: " + aOrB);
 
-        BooleanExpression3 aAndBorC = bln(true, "A")
+        BooleanExpression4 aAndBorC = bln(true, "A")
                 .and(bln(true, "B"))
                 .or(bln(true, "C"));
         System.out.println("A,true AND B,true OR C,true: " + aAndBorC);
 
-        BooleanExpression3 aAndB_or_cAndD = bln(
+        BooleanExpression4 aAndB_or_cAndD = bln(
                 bln(true, "A").and(
                         bln(true, "B"))
         ).or(bln(true, "C").and(
@@ -65,7 +65,7 @@ public class BooleanExpression3Test {
 
         System.out.println("(A,true AND B,true) OR (C,true and D,true): " + aAndB_or_cAndD);
 
-        BooleanExpression3 aAndBorCAndD =
+        BooleanExpression4 aAndBorCAndD =
                 bln((f) -> 5 < 10, "A").and(
                         bln(true, "B")).or(
                         bln(true, "C")).and(
@@ -111,7 +111,7 @@ public class BooleanExpression3Test {
             }
         }
 
-        BooleanExpression3 isTheRealPhil = bln((PenguinFacts f) -> f.name.equals("Phil"), "Name is Phil")
+        BooleanExpression4 isTheRealPhil = bln((PenguinFacts f) -> f.name.equals("Phil"), "Name is Phil")
                 .and((PenguinFacts f) -> f.age == 2, "Age is 2, because the real Phil is 2")
                 .and(not((PenguinFacts f) -> f.favoriteColor.equals("Red"), "Favorite color is red"));
 
@@ -120,5 +120,58 @@ public class BooleanExpression3Test {
         assertTrue(isTheRealPhil.evaluate(new PenguinFacts("Phil", 2, "Blue")));
 
         System.out.println("done");
+    }
+
+    @Test
+    public void testVisitor() {
+        BooleanExpression4 expression = bln(
+                bln(f -> true, "A")
+                        .and(f -> false, "B")
+        ).or(
+                bln(f -> true, "C")
+                        .and(f -> false, "D")
+        ).or(
+                bln(false, "E")
+                        .and(false, "F")
+                        .and(false, "G")
+        ).or(
+                bln(false, "H")
+                        .or(false, "I")
+                        .or(true, "J")
+                        .or(false, "K")
+                        .or(true, "L")
+        );
+
+        expression.visit(new BooleanExpression4.BooleanExpressionVisitor() {
+            @Override
+            public void visitBooleanWrapper(BooleanExpression4.BooleanWrapper booleanWrapper) {
+                System.out.println("booleanWrapper = " + booleanWrapper);
+            }
+
+            @Override
+            public void visitBooleanAnd(BooleanExpression4.BooleanAnd booleanAnd) {
+                System.out.println("booleanAnd = " + booleanAnd);
+            }
+
+            @Override
+            public void visitBooleanOr(BooleanExpression4.BooleanOr booleanOr) {
+                System.out.println("booleanOr = " + booleanOr);
+            }
+
+            @Override
+            public void visitBooleanNot(BooleanExpression4.BooleanNot booleanNot) {
+                System.out.println("booleanNot = " + booleanNot);
+            }
+
+            @Override
+            public void visitBooleanValue(BooleanExpression4.BooleanValue booleanValue) {
+                System.out.println("booleanValue = " + booleanValue);
+            }
+
+            @Override
+            public void visitBooleanFunction(BooleanExpression4.BooleanFunction booleanFunction) {
+                System.out.println("booleanFunction = " + booleanFunction);
+            }
+        });
     }
 }

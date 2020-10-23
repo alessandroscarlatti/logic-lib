@@ -1,15 +1,15 @@
 package logiclib.iteration1.visjs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import logiclib.iteration1.BooleanExpression5;
-import logiclib.iteration1.BooleanExpression5.*;
+import logiclib.iteration1.expression.BooleanExpression5;
+import logiclib.iteration1.expression.BooleanExpression5.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static logiclib.iteration1.BooleanExpression5.*;
+import static logiclib.iteration1.expression.BooleanExpression5.*;
 
 public class BooleanExpressionVisualizer3 {
 
@@ -74,9 +74,15 @@ public class BooleanExpressionVisualizer3 {
                 bln((Facts f) -> f.c == 2, "c == 2")
         );
 
+        if (false || false) {
+            System.out.println();
+        } else {
+            System.out.println();
+        }
+
         expr1.evaluate(new Facts(-1234, 0, 3));
-        expr2.evaluate(new Facts(-1234, 0, 3));
-        expr3.evaluate(new Facts(-1234, 0, 3));
+//        expr2.evaluate(new Facts(-1234, 0, 3));
+        expr3.evaluate(new Facts(0, 1, 2));
 
         Network network = getNetwork(Arrays.asList(expr1, expr2, expr3));
 //        Path file = Paths.get("sandbox/network.json");

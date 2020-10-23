@@ -1,8 +1,8 @@
-package logiclib.iteration1;
+package logiclib.iteration1.expression;
 
 import org.junit.Test;
 
-import static logiclib.iteration1.BooleanExpression2.bln;
+import static logiclib.iteration1.expression.BooleanExpression2.bln;
 
 public class BooleanExpression2Test {
 

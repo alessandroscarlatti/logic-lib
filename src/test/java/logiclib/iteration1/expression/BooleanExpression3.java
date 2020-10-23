@@ -1,4 +1,4 @@
-package logiclib.iteration1;
+package logiclib.iteration1.expression;
 
 import java.util.Objects;
 import java.util.function.Function;

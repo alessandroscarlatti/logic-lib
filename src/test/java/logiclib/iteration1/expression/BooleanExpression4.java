@@ -1,9 +1,9 @@
-package logiclib.iteration1;
+package logiclib.iteration1.expression;
 
-import java.util.*;
+import java.util.Objects;
 import java.util.function.Function;
 
-public abstract class BooleanExpression5 {
+public abstract class BooleanExpression4 {
 
     private String name;
     private Boolean value;
@@ -13,72 +13,58 @@ public abstract class BooleanExpression5 {
 
     // Boolean Expression Creators
 
-    public static BooleanExpression5 bln(Boolean value, String name) {
+    public static BooleanExpression4 bln(Boolean value, String name) {
         return new BooleanValue(value, name);
     }
 
-    public static <F> BooleanExpression5 bln(Function<F, Boolean> bln, String name) {
+    public static <F> BooleanExpression4 bln(Function<F, Boolean> bln, String name) {
         return new BooleanFunction((Function) bln, name);
     }
 
-    public static BooleanExpression5 bln(BooleanExpression5 other) {
+    public static BooleanExpression4 bln(BooleanExpression4 other) {
         return new BooleanWrapper(other);
     }
 
     // Boolean NOT Expression Creators
 
-    public static BooleanExpression5 not(Boolean value, String name) {
+    public static BooleanExpression4 not(Boolean value, String name) {
         return new BooleanNot(new BooleanValue(value, name));
     }
 
-    public static <F> BooleanExpression5 not(Function<F, Boolean> function, String name) {
+    public static <F> BooleanExpression4 not(Function<F, Boolean> function, String name) {
         return new BooleanNot(new BooleanFunction((Function) function, name));
     }
 
-    public static BooleanExpression5 not(BooleanExpression5 other) {
+    public static BooleanExpression4 not(BooleanExpression4 other) {
         return new BooleanNot(other);
     }
 
     // Boolean AND Expression Creators
 
-    public BooleanExpression5 and(Boolean value, String name) {
+    public BooleanExpression4 and(Boolean value, String name) {
         return new BooleanAnd(this, new BooleanValue(value, name));
     }
 
-    public <F> BooleanExpression5 and(Function<F, Boolean> function, String name) {
+    public <F> BooleanExpression4 and(Function<F, Boolean> function, String name) {
         return new BooleanAnd(this, new BooleanFunction((Function) function, name));
     }
 
-    public BooleanExpression5 and(BooleanExpression5 other) {
+    public BooleanExpression4 and(BooleanExpression4 other) {
         return new BooleanAnd(this, other);
-    }
-
-    public static BooleanExpression5 and(BooleanExpression5... expressions) {
-        if (expressions.length == 0)
-            throw new IllegalArgumentException("Must have at least 1 expression");
-
-        return new BooleanAnd(expressions);
     }
 
     // Boolean OR Expression Creators
 
-    public BooleanExpression5 or(Boolean value, String name) {
+    public BooleanExpression4 or(Boolean value, String name) {
         return new BooleanOr(this, new BooleanValue(value, name));
     }
 
-    public <F> BooleanExpression5 or(Function<F, Boolean> function, String name) {
+    public <F> BooleanExpression4 or(Function<F, Boolean> function, String name) {
         return new BooleanOr(this, new BooleanFunction((Function) function, name));
     }
 
-    public BooleanExpression5 or(BooleanExpression5 other) {
+    public BooleanExpression4 or(BooleanExpression4 other) {
         return new BooleanOr(this, other);
-    }
-
-    public static BooleanExpression5 or(BooleanExpression5... expressions) {
-        if (expressions.length == 0)
-            throw new IllegalArgumentException("Must have at least 1 expression");
-
-        return new BooleanOr(expressions);
     }
 
     /**
@@ -151,7 +137,7 @@ public abstract class BooleanExpression5 {
         this.userData = userData;
     }
 
-    public static class BooleanValue extends BooleanExpression5 {
+    public static class BooleanValue extends BooleanExpression4 {
         private final boolean value;
 
         public BooleanValue(boolean value, String name) {
@@ -175,7 +161,7 @@ public abstract class BooleanExpression5 {
         }
     }
 
-    public static class BooleanFunction extends BooleanExpression5 {
+    public static class BooleanFunction extends BooleanExpression4 {
         private final Function<Object, Boolean> booleanFunction;
 
         public BooleanFunction(Function<Object, Boolean> booleanFunction, String name) {
@@ -199,15 +185,15 @@ public abstract class BooleanExpression5 {
         }
     }
 
-    public static class BooleanWrapper extends BooleanExpression5 {
-        private final BooleanExpression5 wrapped;
+    public static class BooleanWrapper extends BooleanExpression4 {
+        private final BooleanExpression4 wrapped;
 
-        public BooleanWrapper(BooleanExpression5 wrapped) {
+        public BooleanWrapper(BooleanExpression4 wrapped) {
             setName(wrapped.getName());
             this.wrapped = Objects.requireNonNull(wrapped, "Expression cannot be null");
         }
 
-        public BooleanExpression5 getWrapped() {
+        public BooleanExpression4 getWrapped() {
             return wrapped;
         }
 
@@ -228,36 +214,28 @@ public abstract class BooleanExpression5 {
         }
     }
 
-    public static class BooleanAnd extends BooleanExpression5 {
+    public static class BooleanAnd extends BooleanExpression4 {
 
-        private final BooleanExpression5[] args;
+        private final BooleanExpression4 arg1;
+        private final BooleanExpression4 arg2;
 
-        public BooleanAnd(BooleanExpression5... args) {
-            setName(buildName(args));
-            this.args = args;
+        public BooleanAnd(BooleanExpression4 arg1, BooleanExpression4 arg2) {
+            setName("(" + arg1.getName() + " AND " + arg2.getName() + ")");
+            this.arg1 = Objects.requireNonNull(arg1, "Arg1 cannot be null");
+            this.arg2 = Objects.requireNonNull(arg2, "Arg2 cannot be null");
         }
 
         @Override
         protected Boolean doEvaluate(Object facts) {
-            for (BooleanExpression5 arg : args) {
-                Boolean value = arg.evaluate(facts);
-                if (!value)
-                    return false;
-            }
-
-            return true;
+            return arg1.evaluate(facts) && arg2.evaluate(facts);
         }
 
-        private static String buildName(BooleanExpression5... args) {
-            StringJoiner joiner = new StringJoiner(" AND ", "(", ")");
-            for (BooleanExpression5 arg : args) {
-                joiner.add(arg.getName());
-            }
-            return joiner.toString();
+        public BooleanExpression4 getArg1() {
+            return arg1;
         }
 
-        public BooleanExpression5[] getArgs() {
-            return args;
+        public BooleanExpression4 getArg2() {
+            return arg2;
         }
 
         @Override
@@ -267,42 +245,25 @@ public abstract class BooleanExpression5 {
 
         public void visit(BooleanExpressionVisitor visitor) {
             visitor.visitBooleanAnd(this);
-            for (BooleanExpression5 arg : args) {
-                arg.visit(visitor);
-            }
+            arg1.visit(visitor);
+            arg2.visit(visitor);
         }
     }
 
-    public static class BooleanOr extends BooleanExpression5 {
+    public static class BooleanOr extends BooleanExpression4 {
 
-        private final BooleanExpression5[] args;
+        private final BooleanExpression4 arg1;
+        private final BooleanExpression4 arg2;
 
-        public BooleanOr(BooleanExpression5... args) {
-            setName(buildName(args));
-            this.args = args;
+        public BooleanOr(BooleanExpression4 arg1, BooleanExpression4 arg2) {
+            setName("(" + arg1.getName() + " OR " + arg2.getName() + ")");
+            this.arg1 = arg1;
+            this.arg2 = arg2;
         }
 
         @Override
         protected Boolean doEvaluate(Object facts) {
-            for (BooleanExpression5 arg : args) {
-                Boolean value = arg.evaluate(facts);
-                if (value)
-                    return true;
-            }
-
-            return false;
-        }
-
-        private static String buildName(BooleanExpression5... args) {
-            StringJoiner joiner = new StringJoiner(" OR ", "(", ")");
-            for (BooleanExpression5 arg : args) {
-                joiner.add(arg.getName());
-            }
-            return joiner.toString();
-        }
-
-        public BooleanExpression5[] getArgs() {
-            return args;
+            return arg1.evaluate(facts) || arg2.evaluate(facts);
         }
 
         @Override
@@ -310,18 +271,25 @@ public abstract class BooleanExpression5 {
             return getName();
         }
 
+        public BooleanExpression4 getArg1() {
+            return arg1;
+        }
+
+        public BooleanExpression4 getArg2() {
+            return arg2;
+        }
+
         public void visit(BooleanExpressionVisitor visitor) {
             visitor.visitBooleanOr(this);
-            for (BooleanExpression5 arg : args) {
-                arg.visit(visitor);
-            }
+            arg1.visit(visitor);
+            arg2.visit(visitor);
         }
     }
 
-    public static class BooleanNot extends BooleanExpression5 {
-        private final BooleanExpression5 arg;
+    public static class BooleanNot extends BooleanExpression4 {
+        private final BooleanExpression4 arg;
 
-        public BooleanNot(BooleanExpression5 arg) {
+        public BooleanNot(BooleanExpression4 arg) {
             setName("NOT " + arg.getName());
             this.arg = arg;
         }
@@ -336,7 +304,7 @@ public abstract class BooleanExpression5 {
             return getName();
         }
 
-        public BooleanExpression5 getArg() {
+        public BooleanExpression4 getArg() {
             return arg;
         }
 

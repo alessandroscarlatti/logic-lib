@@ -1,15 +1,15 @@
 package logiclib.iteration1.visjs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import logiclib.iteration1.BooleanExpression4;
-import logiclib.iteration1.BooleanExpression4.*;
+import logiclib.iteration1.expression.BooleanExpression4;
+import logiclib.iteration1.expression.BooleanExpression4.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static logiclib.iteration1.BooleanExpression4.bln;
+import static logiclib.iteration1.expression.BooleanExpression4.bln;
 
 public class BooleanExpressionVisualizer2 {
 

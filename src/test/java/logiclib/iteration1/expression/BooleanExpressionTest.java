@@ -1,13 +1,13 @@
-package logiclib.iteration1;
+package logiclib.iteration1.expression;
 
 import org.junit.Test;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static logiclib.iteration1.BooleanExpression.BlnOperator.*;
-import static logiclib.iteration1.BooleanExpression.bln;
-import static logiclib.iteration1.BooleanExpression.not;
+import static logiclib.iteration1.expression.BooleanExpression.BlnOperator.*;
+import static logiclib.iteration1.expression.BooleanExpression.bln;
+import static logiclib.iteration1.expression.BooleanExpression.not;
 import static org.junit.Assert.*;
 
 public class BooleanExpressionTest {
